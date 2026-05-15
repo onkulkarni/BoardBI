@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Download, RefreshCw } from "lucide-react";
 import { listGadgetEntries } from "../gadgets/registry";
 import type { GadgetDef, LayoutItem, Report } from "../reports/types";
 import type { Slicer, SlicerType } from "../../store/slicerStore";
@@ -82,7 +83,12 @@ export function ReportToolbar(props: Props) {
           >
             Add slicer
           </button>
-          <button onClick={props.onRefresh} disabled={props.refreshing || !props.report.jql.trim()}>
+          <button
+            onClick={props.onRefresh}
+            disabled={props.refreshing || !props.report.jql.trim()}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <RefreshCw size={14} />
             {props.refreshing ? "Refreshing…" : "Refresh data"}
           </button>
           <button

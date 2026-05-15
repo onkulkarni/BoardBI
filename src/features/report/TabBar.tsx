@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import type { ReportTab } from "../../store/tabsStore";
 
 type Props = {
@@ -31,7 +32,7 @@ export function TabBar({ tabs, activeId, onPick, onClose }: Props) {
               title="Close tab"
               aria-label="Close tab"
             >
-              ×
+              <X size={12} />
             </button>
           </div>
         );

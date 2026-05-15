@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Download, Plus, Upload } from "lucide-react";
 import { HTTPError } from "ky";
 import { useConnections } from "../connections/useConnections";
 import {
@@ -60,11 +61,19 @@ export function ReportsPage() {
           >
             Generate with AI
           </button>
-          <button onClick={() => setImportOpen(true)}>Import…</button>
+          <button
+            onClick={() => setImportOpen(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Upload size={14} />
+            Import…
+          </button>
           <button
             disabled={selected.size === 0 || exporter.isPending}
             onClick={exportSelected}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
+            <Download size={14} />
             {exporter.isPending
               ? "Exporting…"
               : `Export selected${selected.size > 0 ? ` (${selected.size})` : ""}`}
@@ -107,7 +116,12 @@ export function ReportsPage() {
             </div>
           </label>
           <div className="row" style={{ gap: 8 }}>
-            <button onClick={() => exportOne(r.id)} disabled={exporter.isPending}>
+            <button
+              onClick={() => exportOne(r.id)}
+              disabled={exporter.isPending}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <Download size={14} />
               Export
             </button>
             <button
@@ -154,7 +168,12 @@ function NewReportForm() {
 
   if (!open) {
     return (
-      <button className="primary" onClick={() => setOpen(true)}>
+      <button
+        className="primary"
+        onClick={() => setOpen(true)}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+      >
+        <Plus size={14} />
         New report
       </button>
     );

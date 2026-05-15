@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import type { FieldDef } from "../../../lib/jqlFields";
 
 type Props = {
@@ -57,7 +58,7 @@ export function FieldPicker(props: Props) {
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {selected ? selected.name : <span className="muted">{props.placeholder ?? "Choose…"}</span>}
         </span>
-        <span className="muted">▾</span>
+        <ChevronDown size={14} className="muted" />
       </button>
       {open && (
         <div

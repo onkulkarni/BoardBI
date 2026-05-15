@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { useFields } from "../connections/useFields";
@@ -299,8 +300,15 @@ function RowEditor({
             style={{ flex: "1 1 180px" }}
           />
         )}
-        <button type="button" onClick={onRemove} disabled={!canRemove} title="Remove condition">
-          ✕
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={!canRemove}
+          title="Remove condition"
+          aria-label="Remove condition"
+          style={{ display: "inline-flex", alignItems: "center", padding: "4px 8px" }}
+        >
+          <X size={14} />
         </button>
       </div>
     </div>

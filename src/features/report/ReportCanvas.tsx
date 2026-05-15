@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GridLayout, { WidthProvider, type Layout } from "react-grid-layout";
+import { ChevronRight, Download, Settings, Trash2, Zap } from "lucide-react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import type { FieldDef, JiraIssue } from "../../lib/jqlFields";
@@ -197,44 +198,52 @@ function GadgetFrame({
                 borderRadius: 10,
                 padding: "0 6px",
                 fontSize: 11,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 2,
               }}
               title={`${overrideCount} slicer override(s)`}
             >
-              {overrideCount}↯
+              {overrideCount}
+              <Zap size={10} />
             </span>
           )}
         </span>
         <span className="row no-drag" style={{ gap: 4 }}>
           {exportRows && (
             <button
-              style={{ padding: "1px 6px", fontSize: 12 }}
+              style={{ padding: "2px 6px", display: "inline-flex", alignItems: "center" }}
               onClick={onExport}
               title="Export CSV"
+              aria-label="Export CSV"
             >
-              ⇣
+              <Download size={14} />
             </button>
           )}
           <button
             style={{
-              padding: "1px 6px",
-              fontSize: 12,
+              padding: "2px 6px",
+              display: "inline-flex",
+              alignItems: "center",
               ...(configOpen
                 ? { background: "var(--accent)", color: "white", borderColor: "var(--accent)" }
                 : {}),
             }}
             onClick={onOpenConfig}
             title="Configure"
+            aria-label="Configure gadget"
           >
-            ⚙
+            <Settings size={14} />
           </button>
           <button
-            style={{ padding: "1px 6px", fontSize: 12 }}
+            style={{ padding: "2px 6px", display: "inline-flex", alignItems: "center" }}
             onClick={() => {
               if (confirm("Remove this gadget?")) onRemove();
             }}
             title="Remove"
+            aria-label="Remove gadget"
           >
-            ×
+            <Trash2 size={14} />
           </button>
         </span>
       </div>
@@ -285,8 +294,8 @@ function GadgetConfigDrawer({
           </div>
           <div style={{ fontWeight: 600 }}>{label}</div>
         </div>
-        <button onClick={onClose} title="Close (collapse)">
-          ›
+        <button onClick={onClose} title="Close (collapse)" aria-label="Close" style={{ display: "inline-flex", alignItems: "center", padding: 0 }}>
+          <ChevronRight size={18} />
         </button>
       </div>
       <div className="config-drawer-body stack">

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import {
   flexRender,
   getCoreRowModel,
@@ -73,8 +74,11 @@ function Render({ rows, config, fields }: GadgetRenderProps) {
                     userSelect: "none",
                   }}
                 >
-                  {flexRender(h.column.columnDef.header, h.getContext())}
-                  {{ asc: " ▲", desc: " ▼" }[h.column.getIsSorted() as string] ?? ""}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    {flexRender(h.column.columnDef.header, h.getContext())}
+                    {h.column.getIsSorted() === "asc" && <ArrowUp size={12} />}
+                    {h.column.getIsSorted() === "desc" && <ArrowDown size={12} />}
+                  </span>
                 </th>
               ))}
             </tr>

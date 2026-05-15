@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { fieldsForPicker, isDateField, type FieldDef, type JiraIssue } from "../../lib/jqlFields";
 import { DateRangeSlicer } from "../slicers/DateRangeSlicer";
 import { MultiSelectSlicer } from "../slicers/MultiSelectSlicer";
@@ -36,8 +37,10 @@ export function SlicerBar({ rows, fields, slicers, collapsed, onToggleCollapsed,
         onClick={onToggleCollapsed}
         title={collapsed ? "Show slicers" : "Hide slicers"}
         aria-expanded={!collapsed}
+        style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
       >
-        {collapsed ? `▶ Slicers (${slicers.length})` : "▼ Slicers"}
+        {collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+        <span>{collapsed ? `Slicers (${slicers.length})` : "Slicers"}</span>
       </button>
       {!collapsed && slicers.map((s) => {
         if (s.type === "dateRange") {

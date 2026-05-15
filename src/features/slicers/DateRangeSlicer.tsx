@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { X } from "lucide-react";
 import { PRESET_LABELS, resolveRange, type DateRangePreset, type DateRangeValue } from "../../lib/dateBuckets";
 
 type Props = {
@@ -17,8 +18,8 @@ export function DateRangeSlicer(props: Props) {
       <div className="row" style={{ justifyContent: "space-between" }}>
         <strong style={{ fontSize: 13 }}>Date range</strong>
         {props.onRemove && (
-          <button onClick={props.onRemove} title="Remove slicer" style={{ padding: "2px 6px" }}>
-            ×
+          <button onClick={props.onRemove} title="Remove slicer" aria-label="Remove slicer" style={{ padding: "2px 6px", display: "inline-flex", alignItems: "center" }}>
+            <X size={14} />
           </button>
         )}
       </div>

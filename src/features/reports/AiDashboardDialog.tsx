@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { HTTPError } from "ky";
 import { useNavigate } from "react-router-dom";
@@ -662,8 +663,14 @@ function PreviewPhase({
                   </span>
                 )}
               </div>
-              <button type="button" onClick={() => onRemoveGadget(g.id)} title="Remove">
-                ✕
+              <button
+                type="button"
+                onClick={() => onRemoveGadget(g.id)}
+                title="Remove"
+                aria-label="Remove gadget"
+                style={{ display: "inline-flex", alignItems: "center", padding: "2px 6px" }}
+              >
+                <X size={14} />
               </button>
             </div>
           );
@@ -703,8 +710,14 @@ function PreviewPhase({
                 {s.field}
               </span>
             </div>
-            <button type="button" onClick={() => onRemoveSlicer(s.id)} title="Remove">
-              ✕
+            <button
+              type="button"
+              onClick={() => onRemoveSlicer(s.id)}
+              title="Remove"
+              aria-label="Remove slicer"
+              style={{ display: "inline-flex", alignItems: "center", padding: "2px 6px" }}
+            >
+              <X size={14} />
             </button>
           </div>
         ))}
