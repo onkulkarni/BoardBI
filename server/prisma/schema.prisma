@@ -28,8 +28,8 @@ model Report {
   id           String   @id @default(cuid())
   name         String
   description  String?
-  connectionId String
-  connection   JiraConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connectionId String?
+  connection   JiraConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
   jql          String   @default("")
   // react-grid-layout array
   layout       String   @default("[]")

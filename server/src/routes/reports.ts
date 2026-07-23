@@ -46,6 +46,7 @@ const CreateReport = z.object({
 const UpdateReport = z.object({
   name: z.string().min(1).max(160).optional(),
   description: z.string().max(2000).optional(),
+  connectionId: z.string().min(1).optional(),
   jql: z.string().optional(),
   layout: z.array(LayoutItem).optional(),
   pageSlicers: z.array(PageSlicer).optional(),
@@ -116,7 +117,8 @@ function shapeReport(r: {
   id: string;
   name: string;
   description: string | null;
-  connectionId: string;
+  connectionId: string | null;
+  connection?: { id: string; name: string } | null;
   jql: string;
   layout: string;
   pageSlicers: string;
@@ -130,6 +132,7 @@ function shapeReport(r: {
     name: r.name,
     description: r.description,
     connectionId: r.connectionId,
+    connectionName: r.connection?.name ?? null,
     jql: r.jql,
     layout: JSON.parse(r.layout) as unknown,
     pageSlicers: JSON.parse(r.pageSlicers) as unknown,
@@ -148,7 +151,7 @@ function shapeReport(r: {
 router.get("/", async (_req, res) => {
   const items = await prisma.report.findMany({
     orderBy: { updatedAt: "desc" },
-    include: { gadgets: true },
+    include: { gadgets: true, connection: { select: { id: true, name: true } } },
   });
   res.json(items.map(shapeReport));
 });
@@ -156,7 +159,7 @@ router.get("/", async (_req, res) => {
 router.get("/:id", async (req, res) => {
   const r = await prisma.report.findUnique({
     where: { id: req.params.id },
-    include: { gadgets: true },
+    include: { gadgets: true, connection: { select: { id: true, name: true } } },
   });
   if (!r) {
     res.status(404).json({ error: "Report not found" });
@@ -219,9 +222,20 @@ router.patch("/:id", async (req, res) => {
     return;
   }
 
+  if (parsed.data.connectionId !== undefined) {
+    const conn = await prisma.jiraConnection.findUnique({
+      where: { id: parsed.data.connectionId },
+    });
+    if (!conn) {
+      res.status(400).json({ error: "Unknown connectionId" });
+      return;
+    }
+  }
+
   const data: Record<string, string | boolean | null> = {};
   if (parsed.data.name !== undefined) data.name = parsed.data.name;
   if (parsed.data.description !== undefined) data.description = parsed.data.description;
+  if (parsed.data.connectionId !== undefined) data.connectionId = parsed.data.connectionId;
   if (parsed.data.jql !== undefined) data.jql = parsed.data.jql;
   if (parsed.data.slicerBarCollapsed !== undefined)
     data.slicerBarCollapsed = parsed.data.slicerBarCollapsed;
@@ -237,7 +251,7 @@ router.patch("/:id", async (req, res) => {
     });
     return tx.report.findUniqueOrThrow({
       where: { id: req.params.id },
-      include: { gadgets: true },
+      include: { gadgets: true, connection: { select: { id: true, name: true } } },
     });
   });
   res.json(shapeReport(updated));
@@ -255,6 +269,12 @@ router.post("/:id/data", async (req, res) => {
   });
   if (!report) {
     res.status(404).json({ error: "Report not found" });
+    return;
+  }
+  if (!report.connection) {
+    res.status(400).json({
+      error: "This report's connection was deleted. Reconnect it to a connection before refreshing.",
+    });
     return;
   }
   if (!report.jql.trim()) {

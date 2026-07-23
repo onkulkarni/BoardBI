@@ -23,7 +23,8 @@ export type Report = {
   id: string;
   name: string;
   description: string | null;
-  connectionId: string;
+  connectionId: string | null;
+  connectionName: string | null;
   jql: string;
   layout: LayoutItem[];
   pageSlicers: Slicer[];
@@ -47,6 +48,7 @@ export type CreateReportInput = {
 export type UpdateReportInput = Partial<{
   name: string;
   description: string;
+  connectionId: string;
   jql: string;
   layout: LayoutItem[];
   pageSlicers: Slicer[];

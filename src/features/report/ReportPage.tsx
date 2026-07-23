@@ -10,16 +10,18 @@ import { SlicerBar } from "./SlicerBar";
 import { ReportCanvas } from "./ReportCanvas";
 import { DrillThroughModal } from "./DrillThroughModal";
 import type { DrillThrough } from "../gadgets/types";
+import { ReconnectDialog } from "../reports/ReconnectDialog";
 
 export function ReportPage({ id }: { id: string }) {
   const { data: report, isLoading, error } = useReport(id);
   const update = useUpdateReport(id);
   const refresh = useRefreshData(id);
   const { data: latest } = useLatestData(id);
-  const { data: fieldsResp } = useFields(report?.connectionId);
+  const { data: fieldsResp } = useFields(report?.connectionId ?? undefined);
   const slicers = useReportSlicers(id);
   const setSlicers = useSlicerStore((s) => s.set);
   const updateTabName = useTabsStore((s) => s.updateTabName);
+  const [reconnectOpen, setReconnectOpen] = useState(false);
 
   // Reflect the report name into the tabs store once we know it.
   useEffect(() => {
@@ -75,6 +77,26 @@ export function ReportPage({ id }: { id: string }) {
 
   return (
     <div className="stack" style={{ gap: 12 }}>
+      {report.connectionId === null && (
+        <div className="card row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontWeight: 600, color: "var(--danger)" }}>Connection deleted</div>
+            <div className="muted" style={{ fontSize: 13 }}>
+              This report's JIRA connection was deleted.
+              {latest?.fetchedAt
+                ? ` It still shows data from the last refresh (${new Date(latest.fetchedAt).toLocaleString()}).`
+                : " It has no fetched data yet."}
+              {" "}Reconnect it to a connection to resume refreshing.
+            </div>
+          </div>
+          <button className="primary" onClick={() => setReconnectOpen(true)}>
+            Reconnect
+          </button>
+        </div>
+      )}
+      {reconnectOpen && (
+        <ReconnectDialog reportId={id} onClose={() => setReconnectOpen(false)} />
+      )}
       <ReportToolbar
         report={report}
         rowCount={latest?.rowCount}
@@ -83,6 +105,7 @@ export function ReportPage({ id }: { id: string }) {
         dirty={dirty}
         refreshing={refresh.isPending}
         saving={update.isPending}
+        disconnected={report.connectionId === null}
         hasDateField={fields.some((f) => f.schema?.type === "date" || f.schema?.type === "datetime")}
         hasGroupField={fields.length > 0}
         onRefresh={() => refresh.mutate()}
@@ -164,7 +187,11 @@ function EmptyState({
       ) : (
         <div className="muted">Click Refresh to fetch issues from JIRA.</div>
       )}
-      <button className="primary" onClick={onRefresh} disabled={pending || !report.jql.trim()}>
+      <button
+        className="primary"
+        onClick={onRefresh}
+        disabled={pending || !report.jql.trim() || report.connectionId === null}
+      >
         {pending ? "Fetching…" : "Refresh"}
       </button>
     </div>

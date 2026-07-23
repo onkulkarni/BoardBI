@@ -13,6 +13,7 @@ import {
 import type { ExportFile } from "./types";
 import { JqlBuilderDialog } from "./JqlBuilderDialog";
 import { AiDashboardDialog } from "./AiDashboardDialog";
+import { ReconnectDialog } from "./ReconnectDialog";
 
 export function ReportsPage() {
   const { data: reports, isLoading } = useReports();
@@ -22,6 +23,7 @@ export function ReportsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importOpen, setImportOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const [reconnectingId, setReconnectingId] = useState<string | null>(null);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -92,6 +94,10 @@ export function ReportsPage() {
         />
       )}
 
+      {reconnectingId && (
+        <ReconnectDialog reportId={reconnectingId} onClose={() => setReconnectingId(null)} />
+      )}
+
       {isLoading && <div className="muted">Loading…</div>}
       {reports && reports.length === 0 && (
         <div className="card muted">No reports yet.</div>
@@ -112,10 +118,19 @@ export function ReportsPage() {
               <div className="muted" style={{ fontSize: 13 }}>
                 {r.gadgets.length} gadgets · updated{" "}
                 {new Date(r.updatedAt).toLocaleString()}
+                {" · "}
+                {r.connectionId ? (
+                  r.connectionName
+                ) : (
+                  <span style={{ color: "var(--danger)" }}>Disconnected</span>
+                )}
               </div>
             </div>
           </label>
           <div className="row" style={{ gap: 8 }}>
+            {r.connectionId === null && (
+              <button onClick={() => setReconnectingId(r.id)}>Reconnect</button>
+            )}
             <button
               onClick={() => exportOne(r.id)}
               disabled={exporter.isPending}

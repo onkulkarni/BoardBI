@@ -12,6 +12,7 @@ type Props = {
   dirty: boolean;
   refreshing: boolean;
   saving: boolean;
+  disconnected: boolean;
   hasDateField: boolean;
   hasGroupField: boolean;
   onRefresh: () => void;
@@ -85,7 +86,8 @@ export function ReportToolbar(props: Props) {
           </button>
           <button
             onClick={props.onRefresh}
-            disabled={props.refreshing || !props.report.jql.trim()}
+            disabled={props.refreshing || !props.report.jql.trim() || props.disconnected}
+            title={props.disconnected ? "Reconnect this report to a connection before refreshing" : undefined}
             style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
             <RefreshCw size={14} />

@@ -123,6 +123,9 @@ JIRA custom fields appear as `customfield_10010` etc. The `FieldCache` stores bo
 ### Token rotation breaks existing data
 `APP_ENCRYPTION_KEY` is the AES-GCM key for stored JIRA tokens. Rotating it makes every existing connection unreadable; users would need to re-add connections. There's no rotation flow — this is intentional simplicity for v1.
 
+### Deleting a JIRA connection cascades to delete its reports (pending fix)
+`Report.connectionId` currently has `onDelete: Cascade` (`server/prisma/schema.prisma`), so deleting a `JiraConnection` deletes every `Report` built on it, plus their `Gadget`/`DatasetSnapshot` rows — layout, gadgets, slicers, and fetched data all go with it. There's also no endpoint to edit an existing connection's `apiToken`, so rotating an expired token means delete-then-recreate the connection today, which makes the cascade especially painful. A fix (make `connectionId` nullable with `onDelete: SetNull` so reports survive as "disconnected" and can be reassigned to another connection) is designed in `HANDOFF-preserve-reports-on-connection-delete.md` at the repo root — not yet implemented as of 2026-07-05.
+
 ## What's intentionally not built (roadmap)
 
 These items appear in the original plan but are deferred. The codebase is shaped to absorb them.

@@ -5,10 +5,12 @@ import {
   useDeleteConnection,
   useTestConnection,
 } from "./useConnections";
+import { useReports } from "../reports/useReports";
 import type { TestConnectionResult } from "./types";
 
 export function ConnectionsPage() {
   const { data: connections, isLoading, error } = useConnections();
+  const { data: reports } = useReports();
 
   return (
     <div className="stack" style={{ maxWidth: 720 }}>
@@ -25,7 +27,14 @@ export function ConnectionsPage() {
         <div className="card muted">No connections yet.</div>
       )}
       {connections?.map((c) => (
-        <ConnectionCard key={c.id} id={c.id} name={c.name} baseUrl={c.baseUrl} email={c.email} />
+        <ConnectionCard
+          key={c.id}
+          id={c.id}
+          name={c.name}
+          baseUrl={c.baseUrl}
+          email={c.email}
+          reportCount={reports?.filter((r) => r.connectionId === c.id).length ?? 0}
+        />
       ))}
     </div>
   );
@@ -103,7 +112,13 @@ function NewConnectionForm() {
   );
 }
 
-function ConnectionCard(props: { id: string; name: string; baseUrl: string; email: string }) {
+function ConnectionCard(props: {
+  id: string;
+  name: string;
+  baseUrl: string;
+  email: string;
+  reportCount: number;
+}) {
   const test = useTestConnection();
   const del = useDeleteConnection();
   const [result, setResult] = useState<TestConnectionResult | null>(null);
@@ -126,7 +141,11 @@ function ConnectionCard(props: { id: string; name: string; baseUrl: string; emai
           </button>
           <button
             onClick={() => {
-              if (confirm(`Delete connection "${props.name}"?`)) del.mutate(props.id);
+              const message =
+                props.reportCount > 0
+                  ? `Delete connection "${props.name}"? ${props.reportCount} report(s) using it will be preserved but disconnected — you can reconnect them later.`
+                  : `Delete connection "${props.name}"?`;
+              if (confirm(message)) del.mutate(props.id);
             }}
             disabled={del.isPending}
           >
